@@ -4,3 +4,5 @@ gem 'rspec'
 gem 'guard-rspec', require: false
 gem 'sinatra'
 gem 'sinatra-reloader'
+gem 'icalendar', '~> 2.4.1'
+gem 'tzinfo-data'
