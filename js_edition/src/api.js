@@ -18,27 +18,33 @@ const getReason = (type) => {
   return reasons[type] || reasons['default'];
 };
 
+const filterAbsences = (absences, userId = null, startDate = null, endDate = null) => new Promise((resolve) => {
+  resolve(absences.filter((absence) => {
+    if (userId && absence.userId != userId) {
+      return false;
+    }
+
+    if (startDate && moment(absence.startDate).isBefore(startDate)) {
+      return false;
+    }
+
+    if (endDate && moment(absence.endDate).isAfter(endDate)) {
+      return false;
+    }
+
+    return true;
+  }));
+});
+
 export const absences = (userId = null, startDate = null, endDate = null) => {
   return readJsonFile(ABSENCES_PATH).then((absences) => {
     return readJsonFile(MEMBERS_PATH).then((members) => {
-      return absences.filter((absence) => {
-        if (userId && absence.userId != userId) {
-          return false;
-        }
-
-        if (startDate && moment(absence.startDate).isBefore(startDate)) {
-          return false;
-        }
-
-        if (endDate && moment(absence.endDate).isAfter(endDate)) {
-          return false;
-        }
-
-        return true;
-      }).map((absence) => {
-        absence.member = members.find(member => member.userId == absence.userId);
-        absence.reason = getReason(absence.type);
-        return absence;
+      return filterAbsences(absences, userId, startDate, endDate).then((absences) => {
+        return absences.map((absence) => {
+          absence.member = members.find(member => member.userId == absence.userId);
+          absence.reason = getReason(absence.type);
+          return absence;
+        });
       });
     });
   });

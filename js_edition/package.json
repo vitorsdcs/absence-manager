@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "express": "^4.16.4",
+    "ical-generator": "^1.2.1",
     "moment": "^2.22.2"
   }
 }
