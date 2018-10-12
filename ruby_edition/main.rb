@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra/reloader'
+require_relative './cm_challenge/api'
 require_relative './cm_challenge/absences'
 
 get '/' do
@@ -10,5 +11,5 @@ get '/' do
     content_type 'text/calendar'
     attachment 'absences.ics'
     absences = CmChallenge::Absences.new
-    absences.to_ical(user_id, start_date, end_date)
+    absences.to_ical(CmChallenge::Api.absences_with_members(user_id, start_date, end_date))
 end

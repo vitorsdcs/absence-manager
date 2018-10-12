@@ -3,10 +3,10 @@ require_relative './api'
 
 module CmChallenge
   class Absences
-    def to_ical(user_id = nil, start_date = nil, end_date = nil)
+    def to_ical(absences)
       cal = Icalendar::Calendar.new
 
-      Api.absences_with_members(user_id, start_date, end_date).map do |absence|
+      absences.map do |absence|
         cal.event do |e|
           e.dtstart     = DateTime.parse(absence[:start_date] + 'T00:00:00')
           e.dtend       = DateTime.parse(absence[:end_date] + 'T23:59:59')
