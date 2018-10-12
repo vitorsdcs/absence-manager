@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import moment from 'moment';
 
 const ABSENCES_PATH = path.join(__dirname, 'json_files', 'absences.json');
 const MEMBERS_PATH = path.join(__dirname, 'json_files', 'members.json');
@@ -8,6 +9,37 @@ const readJsonFile = (path) => new Promise((resolve) => fs.readFile(path, 'utf8'
   .then((data) => JSON.parse(data))
   .then((data) => data.payload);
 
-export const members = () => readJsonFile(MEMBERS_PATH);
-export const absences = () => readJsonFile(ABSENCES_PATH);
+const getReason = (type) => {
+  const reasons = {
+    'sickness': 'sick',
+    'vacation': 'on vacation',
+    'default': 'absent'
+  };
+  return reasons[type] || reasons['default'];
+};
 
+export const absences = (userId = null, startDate = null, endDate = null) => {
+  return readJsonFile(ABSENCES_PATH).then((absences) => {
+    return readJsonFile(MEMBERS_PATH).then((members) => {
+      return absences.filter((absence) => {
+        if (userId && absence.userId != userId) {
+          return false;
+        }
+
+        if (startDate && moment(absence.startDate).isBefore(startDate)) {
+          return false;
+        }
+
+        if (endDate && moment(absence.endDate).isAfter(endDate)) {
+          return false;
+        }
+
+        return true;
+      }).map((absence) => {
+        absence.member = members.find(member => member.userId == absence.userId);
+        absence.reason = getReason(absence.type);
+        return absence;
+      });
+    });
+  });
+};
