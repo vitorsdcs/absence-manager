@@ -23,6 +23,8 @@ app.get('/', function (req, res) {
         });
 
         cal.serve(res);
+    }).catch((err) => {
+        console.log(err);
     });
 });
 

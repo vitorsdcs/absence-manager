@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
+import { rejects } from 'assert';
 
 const ABSENCES_PATH = path.join(__dirname, 'json_files', 'absences.json');
 const MEMBERS_PATH = path.join(__dirname, 'json_files', 'members.json');
@@ -45,7 +46,13 @@ export const absences = (userId = null, startDate = null, endDate = null) => {
           absence.reason = getReason(absence.type);
           return absence;
         });
+      }).catch((err) => {
+        console.log(err);
       });
+    }).catch((err) => {
+      console.log(err);
     });
+  }).catch((err) => {
+    console.log(err);
   });
 };
