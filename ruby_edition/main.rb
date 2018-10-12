@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/reloader'
+require_relative './cm_challenge/api'
 
 get '/' do
-    'Hello world'
+    p CmChallenge::Api.absences_with_members().to_json
 end

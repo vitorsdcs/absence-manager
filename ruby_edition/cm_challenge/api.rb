@@ -11,6 +11,28 @@ module CmChallenge
         load_file('members.json')
       end
 
+      def absences_with_members(user_id = nil, start_date = nil, end_date = nil)
+        absences = Array.new
+
+        absences().map do |absence|
+          if (user_id && absence[:user_id] != user_id.to_i)
+            next
+          end
+
+          if (start_date && Date::parse(absence[:start_date]) < Date::parse(start_date))
+            next
+          end
+
+          if (end_date && Date::parse(absence[:end_date]) > Date::parse(end_date))
+            next
+          end
+
+          absences << absence.merge(:member => members.find { |m| m[:user_id] == absence[:user_id] })
+        end
+
+        absences
+      end
+
       private
 
       def load_file(file_name)
